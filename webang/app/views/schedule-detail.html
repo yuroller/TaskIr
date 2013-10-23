@@ -1,0 +1,86 @@
+<form class="form-horizontal">
+<fieldset>
+<legend>Schedule</legend>
+
+<!-- Id -->
+<div class="control-group">
+  <label class="control-label" for="id">Id</label>
+  <div class="controls">
+    <input id="id" name="id" type="text" placeholder="{{schedule.id}}" class="input-mini" readonly="true">
+  </div>
+</div>
+
+<!-- Active -->
+<div class="control-group">
+  <label class="control-label" for="active">Active</label>
+  <div class="controls">
+    <label class="checkbox inline" for="active-0">
+      <input type="checkbox" name="active" id="active-0" value="true">
+    </label>
+  </div>
+</div>
+
+<!-- Date -->
+<div class="control-group">
+  <label class="control-label" for="date">Date</label>
+  <div class="controls">
+    <input id="date" name="date" type="text" class="input-small" ng-model="datepicker.date" data-date-format="dd/mm/yyyy" bs-datepicker>
+    <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
+  </div>
+</div>
+
+<!-- Start -->
+<div class="control-group">
+  <label class="control-label" for="start">Start</label>
+  <div class="controls">  
+    <input id="start" name="start" type="text" class="input-small" ng-model="timepicker.time" data-show-meridian="false" data-minute-step="1" bs-timepicker>
+    <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
+  </div>
+</div>
+
+<!-- Stop -->
+<div class="control-group">
+  <label class="control-label" for="stop">Stop</label>
+  <div class="controls">  
+    <input id="stop" name="stop" type="text" class="input-small" ng-model="timepicker.time" data-show-meridian="false" data-minute-step="1" bs-timepicker>
+    <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
+  </div>
+</div>
+
+<!-- Weekly -->
+<div class="control-group">
+  <label class="control-label" for="weekly">Repeat</label>
+  <div class="controls">
+    <label class="checkbox inline" for="weekly-0">
+      <input type="checkbox" name="weekly" id="weekly-0" value="0">
+      Mon
+    </label>
+    <label class="checkbox inline" for="weekly-1">
+      <input type="checkbox" name="weekly" id="weekly-1" value="1">
+      Tue
+    </label>
+    <label class="checkbox inline" for="weekly-2">
+      <input type="checkbox" name="weekly" id="weekly-2" value="2">
+      Wed
+    </label>
+    <label class="checkbox inline" for="weekly-3">
+      <input type="checkbox" name="weekly" id="weekly-3" value="3">
+      Thu
+    </label>
+    <label class="checkbox inline" for="weekly-4">
+      <input type="checkbox" name="weekly" id="weekly-4" value="4">
+      Fri
+    </label>
+    <label class="checkbox inline" for="weekly-5">
+      <input type="checkbox" name="weekly" id="weekly-5" value="5">
+      Sat
+    </label>
+    <label class="checkbox inline" for="weekly-6">
+      <input type="checkbox" name="weekly" id="weekly-6" value="6">
+      Sun
+    </label>
+  </div>
+</div>
+
+</fieldset>
+</form>

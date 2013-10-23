@@ -1,0 +1,20 @@
+<table class="table">
+  <tr>
+    <th>Id</th>
+    <th>Active</th>
+    <th>Program</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Repeat</th>
+    <th>Edit</th>
+  </tr>
+  <tr ng-repeat="schedule in schedules">
+    <td>{{schedule.id}}</td>
+    <td>{{schedule.active}}</td>
+    <td>{{schedule.program}}</td>
+    <td>{{schedule.start | date: 'dd/MM'}}</td>
+    <td>{{schedule.start | date: 'HH:mm'}}-{{schedule.stop | date: 'HH:mm'}}</td>
+    <td>{{schedule.weekly | weekly}}</td>
+    <td><a href="#/schedules/{{schedule.id}}" class="btn btn-small">Edit</a></td>
+  </tr>
+</table>
