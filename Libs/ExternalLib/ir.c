@@ -50,6 +50,7 @@ void ir_sendRC5(unsigned long data, int nbits)
 {
 	int i;
 	ir_enableIROut();
+	taskENTER_CRITICAL();
 	data = data << (32 - nbits);
 	ir_mark(RC5_T1); // First start bit
 	ir_space(RC5_T1); // Second start bit
@@ -65,4 +66,5 @@ void ir_sendRC5(unsigned long data, int nbits)
 		data <<= 1;
 	}
 	ir_space(0); // Turn off at end
+	taskEXIT_CRITICAL();
 }

@@ -125,6 +125,9 @@ void FlyportTask()
 	while(WFGetStat() != CONNECTED)
 		;
 	UARTWrite(1, "Flyport Wi-fi G connected...hello world!\r\n");
+	while (!DHCPAssigned)
+		;
+	UARTWrite(1, "DHCPAssigned!\r\n");
 	vTaskDelay(200);
 	
 	for (; epoch < EPOCH_REFERENCE; epoch = SNTPGetUTCSeconds()) {
