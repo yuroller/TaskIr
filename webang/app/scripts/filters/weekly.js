@@ -1,17 +1,16 @@
 'use strict';
 
-var DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 angular.module('webangApp')
   .filter('weekly', function () {
     return function (input) {
-     var s = [], n;
+     var s = [], item, n;
       if (!input) {
         return '';
       }
       for (n = 0; n < input.length; n += 1) {
-        if (input[n]) {
-          s.push(DAYS[n]);
+        item = input[n];
+        if (item.active) {
+          s.push(item.name);
         }
       }
       return s.join();

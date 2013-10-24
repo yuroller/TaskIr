@@ -16,17 +16,41 @@ describe('Filter: weekly', function () {
   });
 
    it('should return the empty string with array of false"', function () {
-    var input = [false, false, false, false, false, false, false];
+    var input = [
+      { name: 'Mon', active: false },
+      { name: 'Tue', active: false },
+      { name: 'Wed', active: false },
+      { name: 'Thu', active: false },
+      { name: 'Fri', active: false },
+      { name: 'Sat', active: false },
+      { name: 'Sun', active: false }
+    ];
     expect(weekly(input)).toBe('');
   });
 
    it('should return "Mon" string when only first elem of array is true"', function () {
-    var input = [true, false, false, false, false, false, false];
+    var input = [
+      { name: 'Mon', active: true },
+      { name: 'Tue', active: false },
+      { name: 'Wed', active: false },
+      { name: 'Thu', active: false },
+      { name: 'Fri', active: false },
+      { name: 'Sat', active: false },
+      { name: 'Sun', active: false }
+    ];
     expect(weekly(input)).toBe('Mon');
   });
 
    it('should return all days string with array of true"', function () {
-    var input = [true, true, true, true, true, true, true];
+    var input = [
+      { name: 'Mon', active: true },
+      { name: 'Tue', active: true },
+      { name: 'Wed', active: true },
+      { name: 'Thu', active: true },
+      { name: 'Fri', active: true },
+      { name: 'Sat', active: true },
+      { name: 'Sun', active: true }
+    ];
     expect(weekly(input)).toBe('Mon,Tue,Wed,Thu,Fri,Sat,Sun');
   });
 

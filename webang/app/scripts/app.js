@@ -2,8 +2,8 @@
 
 angular.module('webangApp', [
   //'ngResource',
-  //'ngSanitize'
-  '$strap.directives'
+  //'ngSanitize',
+  'ui.bootstrap'
 ])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -19,12 +19,12 @@ angular.module('webangApp', [
         templateUrl: 'views/config.html',
         controller: 'ConfigCtrl'
       })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
+      .when('/status', {
+        templateUrl: 'views/status.html',
+        controller: 'StatusCtrl'
       })
       .otherwise({
-        redirectTo: '/schedules'
+        redirectTo: '/status'
       });
   }]);
  

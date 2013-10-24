@@ -12,7 +12,7 @@
     <td>{{schedule.id}}</td>
     <td>{{schedule.active}}</td>
     <td>{{schedule.program}}</td>
-    <td>{{schedule.start | date: 'dd/MM'}}</td>
+    <td>{{schedule.date | date: 'dd/MM'}}</td>
     <td>{{schedule.start | date: 'HH:mm'}}-{{schedule.stop | date: 'HH:mm'}}</td>
     <td>{{schedule.weekly | weekly}}</td>
     <td><a href="#/schedules/{{schedule.id}}" class="btn btn-small">Edit</a></td>

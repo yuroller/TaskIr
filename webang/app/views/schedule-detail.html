@@ -24,26 +24,28 @@
 <div class="control-group">
   <label class="control-label" for="date">Date</label>
   <div class="controls">
-    <input id="date" name="date" type="text" class="input-small" ng-model="datepicker.date" data-date-format="dd/mm/yyyy" bs-datepicker>
-    <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
+    <input type="text" class="input-small" datepicker-popup="dd/MM/yyyy" ng-model="schedule.date" is-open="dateOpened" ng-required="true">
+    <button class="btn" ng-click="clickDate()"><i class="icon-calendar"></i></button>
   </div>
 </div>
 
 <!-- Start -->
 <div class="control-group">
   <label class="control-label" for="start">Start</label>
-  <div class="controls">  
-    <input id="start" name="start" type="text" class="input-small" ng-model="timepicker.time" data-show-meridian="false" data-minute-step="1" bs-timepicker>
-    <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
+  <div class="controls">
+    <div class="well well-small" style="display:inline-block;" ng-model="schedule.start" >
+      <timepicker show-meridian="false"></timepicker>
+    </div>
   </div>
 </div>
 
 <!-- Stop -->
 <div class="control-group">
-  <label class="control-label" for="stop">Stop</label>
-  <div class="controls">  
-    <input id="stop" name="stop" type="text" class="input-small" ng-model="timepicker.time" data-show-meridian="false" data-minute-step="1" bs-timepicker>
-    <button type="button" class="btn" data-toggle="timepicker"><i class="icon-time"></i></button>
+  <label class="control-label" for="start">Stop</label>
+  <div class="controls">
+    <div class="well well-small" style="display:inline-block;" ng-model="schedule.stop">
+      <timepicker show-meridian="false"></timepicker>
+    </div>
   </div>
 </div>
 
