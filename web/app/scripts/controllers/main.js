@@ -45,19 +45,35 @@ var config = {
   curTime: new Date()
 };
 
+var clone = function (obj) {
+  var temp, key;
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  temp = obj.constructor();
+  for (key in obj) {
+    temp[key] = clone(obj[key]);
+  }
+  return temp;
+}
+
 angular.module('webangApp')
   .controller('ScheduleListCtrl', ['$scope', function ($scope) {
     $scope.schedules = schedules;
   }])
   .controller('ScheduleDetailCtrl',
     ['$scope', '$routeParams', '$timeout', function ($scope, $routeParams, $timeout) {
-    $scope.schedule = schedules[$routeParams.scheduleId];
+    $scope.schedule = clone(schedules[$routeParams.scheduleId]);
     $scope.dateOpened = false;
     $scope.clickDate = function () {
       var f = !$scope.dateOpened;
       $timeout(function () {
         $scope.dateOpened = f;
       });
+    };
+    $scope.clickOk = function () {
+    };
+    $scope.clickCancel = function () {
     };
   }])
   .controller('ConfigCtrl', ['$scope', function ($scope) {
