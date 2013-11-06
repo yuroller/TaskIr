@@ -5,5 +5,7 @@
 
 extern void ir_configure(BYTE io, BYTE pwm, float freq);
 extern void ir_sendRC5(unsigned long data, int nbits);
+extern void ir_sendNEC(unsigned long data, int nbits);
 
 #endif
+

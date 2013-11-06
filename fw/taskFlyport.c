@@ -56,7 +56,7 @@ static time_t timeAdj(BOOL dst)
 
 static void sendKey(unsigned long key)
 {
-	ir_sendRC5(IR_PRE_DATA_MASK | key, 32);
+	ir_sendNEC(IR_PRE_DATA_MASK | key, 32);
 }
 
 static void sendSequence(const unsigned long *sequence)
@@ -119,7 +119,7 @@ void FlyportTask()
 	vTaskDelay(100);
 	UARTWrite(1, "Welcome to TaskIr program!\r\n");
 	
-	ir_configure(p2, 1, 36000.0f);
+	ir_configure(p2, 1, 38000.0f);
 	// Flyport connects to default network
 	
 	for (;;) {
