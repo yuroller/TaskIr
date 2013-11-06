@@ -64,9 +64,12 @@
 #define USE_RTCC_LIB
 //	UART general defines
 #define UART_BUFFER_SIZE 	256
-#define UART_PORTS			1
+#define UART_PORTS			4
 #define UART_DBG_DEF_BAUD	19200
-
+#define UART_BUFFER_SIZE_1 	UART_BUFFER_SIZE
+#define UART_BUFFER_SIZE_2 	256
+#define UART_BUFFER_SIZE_3 	256
+#define UART_BUFFER_SIZE_4 	256
 
 
 //	WiFi Status defs
@@ -100,7 +103,8 @@ void HWInit(int);
 
 int ADCVal(int ch);
 void ADCInit();
-
+void ADCAttach(int ch);
+void ADCDetach(int ch);
 	
 /*****************************************************************************
  * Section:																	 *
@@ -110,7 +114,7 @@ void IOPut(int io,int putval);
 void IOInit(int io, int putval);
 int IOGet(int io);
 int IOButtonState(int io);
-#if defined (FLYPORT_WF)
+#if (defined (FLYPORT_G) || defined(FLYPORT_LITE))
 	void PowerLed(int val);
 #endif
 
@@ -184,7 +188,7 @@ int IOButtonState(int io);
 #define SPI_OUT		(40)
 #define SPI_SS_OUT	(41)
 
-
+#define RESET_PPS 	(50)
 
 	
 /*****************************************************************************

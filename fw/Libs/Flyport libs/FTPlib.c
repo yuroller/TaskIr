@@ -791,6 +791,7 @@ long FTPStreamRead(char dest[], int len, BYTE timeout)
 		tick1 = TickGetDiv64K();
 		while (count < len)
 		{
+			count2 = 0;
 			toRead = FTPRxLen(dataSocket);
 			while ((toRead < len) && (toRead + streamRBytes < streamLen))
 			{

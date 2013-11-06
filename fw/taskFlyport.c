@@ -121,6 +121,12 @@ void FlyportTask()
 	
 	ir_configure(p2, 1, 36000.0f);
 	// Flyport connects to default network
+	
+	for (;;) {
+		sendKey(IR_4);
+		vTaskDelay(200);
+	}
+	
 	WFConnect(WF_DEFAULT);
 	while(WFGetStat() != CONNECTED)
 		;
@@ -154,3 +160,4 @@ void FlyportTask()
 		vTaskDelay(100);
 	}
 }
+

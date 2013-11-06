@@ -56,7 +56,7 @@ void ir_sendRC5(unsigned long data, int nbits)
 	ir_space(RC5_T1); // Second start bit
 	ir_mark(RC5_T1); // Second start bit
 	for (i = 0; i < nbits; i++) {
-		if (data & TOPBIT) {
+		if ((data & TOPBIT) != 0) {
 			ir_space(RC5_T1); // 1 is space, then mark
 			ir_mark(RC5_T1);
 		} else {
@@ -68,3 +68,4 @@ void ir_sendRC5(unsigned long data, int nbits)
 	ir_space(0); // Turn off at end
 	taskEXIT_CRITICAL();
 }
+

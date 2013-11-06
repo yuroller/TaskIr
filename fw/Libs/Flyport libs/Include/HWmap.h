@@ -195,6 +195,8 @@
 	#define P21					(21)
 	#define p23					(23)
 	#define P23					(23)
+	#define p24					(24)
+	#define P24					(24)
 	#define p25					(25)
 	#define P25					(25)
 

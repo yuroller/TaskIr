@@ -21,7 +21,6 @@
  *  Author               Rev.    Date              Comment
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  Gabriele Allegria    1.0     1/20/2011		   First release  (core team)
- *  Stefano Cappello 							   Added I2C + support in PWM
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  *  Software License Agreement
@@ -99,7 +98,7 @@ extern int RPFunc[];
 extern int OCM[];
 						
 extern int *CNPDs[];
-extern int IOMode[26];
+extern int IOMode[];
 
 extern int CNPos[];
 
@@ -117,6 +116,14 @@ extern int *URXREGs[];
 
 extern int UTXIPos[];
 extern int URXIPos[];
+				
+extern int *AD1CFGL;
+extern int *AD1CFGH;
+extern int *AD1CONF1;
+extern int *AD1CONF2;
+extern int *AD1CONF3;
+extern int *AD1CH;
+extern int *AD1CSL;
 #if defined (FLYPORTGPRS)
 #define MAX_UART_PORTS 3
 #else
@@ -125,9 +132,25 @@ extern int URXIPos[];
 static int bufind_w[4];
 static int bufind_r[4];
 static int Status[26];
-static char Buffer[UART_PORTS][UART_BUFFER_SIZE];
-static char buffover [4];
-static BYTE last_op[4];
+static char* UartBuffers[UART_PORTS];
+static int	 UartSize[UART_PORTS];
+
+#if UART_PORTS >= 1
+static char Buffer1[UART_BUFFER_SIZE_1];
+#endif
+#if UART_PORTS >= 2
+static char Buffer2[UART_BUFFER_SIZE_2];
+#endif
+#if UART_PORTS >= 3
+static char Buffer3[UART_BUFFER_SIZE_3];
+#endif
+#if UART_PORTS >= 4
+static char Buffer4[UART_BUFFER_SIZE_4];
+#endif
+
+
+static char buffover [MAX_UART_PORTS];
+static BYTE last_op[MAX_UART_PORTS];
 
 static int OCTimer[9];
 static char OCTSel[9];
@@ -206,6 +229,55 @@ int ADCVal(int ch)
 	while (!AD_flag);
 	return AD_val;
 }
+
+/**
+* Enables selected analog channel to the related pin (in this way it cannot be used as digital IO pin)
+* \param ch - channel 
+*/
+void ADCAttach(int ch)
+{
+	//	ADC OFF
+	AD1CON1bits.ADON = 0;
+	
+	// Read old value
+	unsigned int adNewVal = AD1PCFGL;
+	
+	// generate bit mask for AND operation
+	unsigned int unsetVal = (1<<an[ch]);
+	unsetVal = ~unsetVal;
+	
+	// Add selected channel (clear related bit on register) 
+	adNewVal = (unsetVal & adNewVal) & 0xFFFF;
+	
+	AD1PCFGL = adNewVal;		//	update 	ADC channels enabled
+	AD1PCFGH = 0x3;				//
+
+	// ADC ON
+	AD1CON1bits.ADON = 1;
+}
+
+/**
+* Disables selected analog channel to the related pin (in this way it can be used as digital IO pin)
+* \param ch - channel 
+*/
+void ADCDetach(int ch)
+{
+	//	ADC OFF
+	AD1CON1bits.ADON = 0;
+	
+	// Read old value
+	unsigned int adNewVal = AD1PCFGL;
+	
+	// Remove selected channel (set related bit on register)
+	adNewVal |= (1<<an[ch]);
+	
+	AD1PCFGL = adNewVal;		//	update 	ADC channels enabled
+	AD1PCFGH = 0x3;				//
+
+	// ADC ON
+	AD1CON1bits.ADON = 1;	
+}
+
 /*! @} */
 
 
@@ -230,7 +302,7 @@ The GPIOs commands can be used the manage the IO pins, to configure, to change o
 void IOPut(int io, int putval)
 {	
 	io--;
-	int addval = 0;
+	WORD addval = 0;
 	switch(putval)
 	{
 	//	Output clear
@@ -303,13 +375,14 @@ void IOPut(int io, int putval)
 	<LI><B>SPICLKOUT</B> SPI clock output pin (only in master mode).</LI>
 	<LI><B>SPI_OUT</B> SPI data output pin.</LI>
 	<LI><B>SPI_SS_OUT</B> SPI slave select output pin (only in master mode).</LI>
+	<LI><B>RESET_PPS</B> Removes previously selected PPS output function.</LI>
 </UL>
  * \return None
  */ 
 void IOInit(int io, int putval) 
 {
 	io--;
-	int addval = 0;
+	WORD addval = 0;
 	if (putval < 5)
 	{
 		switch (putval)
@@ -406,6 +479,19 @@ void IOInit(int io, int putval)
 			__builtin_write_OSCCONL(OSCCON | 0x40);						// Lock register
 		}
 	}
+	else if (putval == RESET_PPS)
+	{
+		__builtin_write_OSCCONL(OSCCON & 0xBF);							// Unlock registers
+		if (RPIORPin[io]%2==0)
+		{					  											// Tests which pin is remapped
+			*RPORs[io] =  (*RPORs[io]&0xFFC0); 							// Write on RPOR from 0 to 5th bit
+		}
+		else
+		{
+			*RPORs[io] = (*RPORs[io]&0xC0FF);							// Write on RPOR from 8th to 13th bit
+		}
+		__builtin_write_OSCCONL(OSCCON | 0x40);	
+	}
 	else if (putval > 30)
 	{
 		__builtin_write_OSCCONL(OSCCON & 0xBF);							// Unlock registers
@@ -431,7 +517,7 @@ void IOInit(int io, int putval)
 int IOGet(int io)
 {
 	io--;
-	int addval = 0;
+	WORD addval = 0;
 	if (IOMode[io] == 0)
 	{
 		int resget;
@@ -514,9 +600,9 @@ int IOButtonState(int io)
 }	
 
 
-#if defined (FLYPORT_WF)
+#if (defined (FLYPORT_G) || defined(FLYPORT_LITE))
 /**
- * Set Green Led on/off/toggle.<B>NOTE:</B> Flyport Wifi-G Only!!
+ * Set Green Led on/off/toggle.<B>NOTE:</B> Flyport Wifi-G and LITE Only!!
  \param val The value to assign to the Green Led:
  <UL>
 	<LI><B>on (or ON, or 1)</B> turns ON led.</LI>
@@ -561,6 +647,39 @@ void UARTInit(int port,long int baud)
 	{
 	#endif
 		port--;
+		switch(port)
+		{
+			#if UART_PORTS >= 1
+			case 0:
+				UartSize[port] = UART_BUFFER_SIZE_1;
+				UartBuffers[port] = Buffer1;
+				break;
+			#endif
+			
+			#if UART_PORTS >= 2
+			case 1:
+				UartSize[port] = UART_BUFFER_SIZE_2;
+				UartBuffers[port] = Buffer2;
+				break;
+			#endif
+			
+			#if UART_PORTS >= 3
+			case 2:
+				UartSize[port] = UART_BUFFER_SIZE_3;
+				UartBuffers[port] = Buffer3;
+				break;
+			#endif
+			
+			#if UART_PORTS >= 4
+			case 3:
+				UartSize[port] = UART_BUFFER_SIZE_4;
+				UartBuffers[port] = Buffer4;
+				break;
+			#endif
+			
+			default:
+				break;
+		}
 		long int brg , baudcalc , clk , err;
 		clk = GetInstructionClock();
 		brg = (clk/(baud*16ul))-1;
@@ -656,9 +775,9 @@ void UARTRxInt(int port)
 				last_op[port] = 0;
 			}
 		}	
+		*(UartBuffers[port]+bufind_w[port]) = *URXREGs[port];
 		
-		Buffer[port][bufind_w[port]] = *URXREGs[port];
-		if (bufind_w[port] == UART_BUFFER_SIZE - 1)
+		if (bufind_w[port] == UartSize[port]- 1)
 		{
 			bufind_w[port] = 0;
 		}
@@ -711,13 +830,13 @@ int UARTBufferSize(int port)
 
 		conf_buff = bufind_r[port] - bufind_w[port];
 		if (conf_buff > 0)
-			bsize = UART_BUFFER_SIZE - bufind_r[port] + bufind_w[port];
+			bsize = UartSize[port] - bufind_r[port] + bufind_w[port];
 		else if (conf_buff < 0)
 
 			bsize = bufind_w[port] - bufind_r[port];
 		else if (conf_buff == 0)
 			if (loc_last_op == 1)
-				bsize = UART_BUFFER_SIZE;
+				bsize = UartSize[port];
 
 		return bsize;
 	#if defined (FLYPORTGPRS)
@@ -754,9 +873,9 @@ int UARTRead(int port , char *towrite , int count)
 		rd = 0;
 		while (irx < count)
 		{
-			*(towrite+irx) = Buffer[port][bufind_r[port]];
+			*(towrite+irx) = *(UartBuffers[port]+bufind_r[port]);
 
-			if (bufind_r[port] == (UART_BUFFER_SIZE-1))
+			if (bufind_r[port] == UartSize[port]-1)
 				bufind_r[port] = 0;
 			else
 				bufind_r[port]++;		

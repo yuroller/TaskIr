@@ -894,30 +894,29 @@ int cWFScan()
 		UINT8 len, oldChannlList[11], chanLen;
 		WFStatusold = _WFStat;
 		_WFStat = SCANNING;
-		
+			
 		//	Setting the proper bssid 	
 		WF_CPGetBssid(1, oldBSSID);
 		BYTE lclarr[6]={0xff,0xff,0xff,0xff,0xff,0xff};
 		WF_CPSetBssid(1, lclarr);
-
+		
 		//	SSID management
 		//	Getting actual SSID from connection profile
 		WF_CPGetSsid(1, oldSSID, &len);
-
+	
 		//	Setting new SSID for connection profile scan
 		WF_CPSetSsid(1, (BYTE*)"", 0);	
 			
 		//	Channel list management
 		WF_CAGetChannelList(oldChannlList, &chanLen);
 		WF_CASetChannelList(oldChannlList, 0);
-
-		WF_Scan(WF_SCAN_ALL);
 	
+		WF_Scan(WF_SCAN_ALL);
 		//	Setting back the old SSID and channel list
 		WF_CPSetSsid(1, oldSSID, len);	
 		WF_CASetChannelList(oldChannlList, chanLen);
 		WF_CPSetBssid(1, oldBSSID);
-	}
+	}	
 	return 0;
 }
 
