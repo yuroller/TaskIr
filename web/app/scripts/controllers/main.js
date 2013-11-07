@@ -57,7 +57,28 @@ var clone = function (obj) {
   return temp;
 }
 
+function TestController($scope, $http) {
+ 
+
+}
+
+
 angular.module('webangApp')
+  .factory('transport', ['$http', function ($http) {
+    return {
+      sendMessage: function (msg) {
+      $http({
+            url: '/api.cgi?action=send&digit=' + msg,
+            method: 'GET',
+        }).success(function (data, status, headers, config) {
+                console.log("success");
+            }).error(function (data, status, headers, config) {
+                console.log(status);
+            });
+         
+      }
+    }
+  }])
   .controller('ScheduleListCtrl', ['$scope', function ($scope) {
     $scope.schedules = schedules;
   }])
@@ -80,4 +101,9 @@ angular.module('webangApp')
     $scope.config = config;
   }])
   .controller('StatusCtrl', ['$scope', function ($scope) {
+  }])
+  .controller('RcCtrl', ['$scope', 'transport', function ($scope, transport) {
+    $scope.sendDigit = function (digit) {
+      transport.sendMessage(digit);
+    };
   }]);

@@ -23,6 +23,9 @@ angular.module('webangApp', [
         templateUrl: 'views/status.html',
         controller: 'StatusCtrl'
       })
+      .when('/rc', {
+        templateUrl: 'views/rc.html'
+      })
       .otherwise({
         redirectTo: '/status'
       });

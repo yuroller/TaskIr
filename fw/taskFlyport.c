@@ -121,12 +121,7 @@ void FlyportTask()
 	
 	ir_configure(p2, 1, 38000.0f);
 	// Flyport connects to default network
-	
-	for (;;) {
-		sendKey(IR_4);
-		vTaskDelay(200);
-	}
-	
+		
 	WFConnect(WF_DEFAULT);
 	while(WFGetStat() != CONNECTED)
 		;
@@ -146,18 +141,19 @@ void FlyportTask()
 	sprintf(s, "The time is: %s\r\n", asctime(now_tm));
 	UARTWrite(1, s);
 
-	UARTWrite(1, "Start recording\r\n");
-	startRec(3, FALSE);
-	vTaskDelay(1000);
-	UARTWrite(1, "Stop recording\r\n");
-	stopRec();
+	//UARTWrite(1, "Start recording\r\n");
+	//startRec(3, FALSE);
+	//vTaskDelay(1000);
+	//UARTWrite(1, "Stop recording\r\n");
+	//stopRec();
 	
 	while(1)
 	{
-		RTCCGet(&clock_tm);
-		sprintf(s, "The time is: %s\r\n", asctime(&clock_tm));
-		UARTWrite(1, s);
+		//RTCCGet(&clock_tm);
+		//sprintf(s, "The time is: %s\r\n", asctime(&clock_tm));
+		//UARTWrite(1, s);
 		vTaskDelay(100);
 	}
 }
+
 

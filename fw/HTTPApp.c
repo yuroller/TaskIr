@@ -40,7 +40,14 @@
 #if defined(STACK_USE_HTTP2_SERVER)
 #define __HTTPAPP_C
 
- 
+#include "ir.h"
+#include "telesystems.h"
+
+static void sendKey(unsigned long key)
+{
+	ir_sendNEC(IR_PRE_DATA_MASK | key, 32);
+}
+
 /****************************************************************************
   FUNCTION	HTTP_IO_RESULT HTTPExecuteGet(void)
 	
@@ -51,14 +58,14 @@
 HTTP_IO_RESULT HTTPExecuteGet(void)
 {
 	BYTE *ptr;
-	BYTE filename[20];
+	BYTE filename[40];
 	
 	// STEP #1:
 	// The function MPFSGetFilename retrieves the name of the requested cgi,
 	// in this case "leds.cgi" and puts it inside the filename variable.
 	// Make sure BYTE filename[] above is large enough for your longest name
-	MPFSGetFilename(curHTTP.file, filename, 20);
-
+	MPFSGetFilename(curHTTP.file, filename, sizeof(filename));
+	UARTWrite(1, (char *)filename);
 	// STEP #2:
 	// Handling of the cgi requests, in this case we have only "leds.cgi" but
 	// it would be possible to have any other cgi request, depending on the webpage
@@ -93,6 +100,25 @@ HTTP_IO_RESULT HTTPExecuteGet(void)
 				break;
 		}
 		
+	} else if (!memcmp(filename, "api.cgi", 7)) {
+		ptr = HTTPGetArg(curHTTP.data, (BYTE *)"action");
+		if (!memcmp(ptr, "send", 4)) {
+			ptr = HTTPGetArg(curHTTP.data, (BYTE *)"digit");
+			switch (*ptr)
+			{
+				case '0': sendKey(IR_0); break;
+				case '1': sendKey(IR_1); break;
+				case '2': sendKey(IR_2); break;
+				case '3': sendKey(IR_3); break;
+				case '4': sendKey(IR_4); break;
+				case '5': sendKey(IR_5); break;
+				case '6': sendKey(IR_6); break;
+				case '7': sendKey(IR_7); break;
+				case '8': sendKey(IR_8); break;
+				case '9': sendKey(IR_9); break;				
+			}
+			UARTWrite(1, (char *)ptr);
+		}
 	}
 	
 	return HTTP_IO_DONE;
@@ -114,12 +140,11 @@ HTTP_IO_RESULT HTTPExecuteGet(void)
 HTTP_IO_RESULT HTTPExecutePost(void)
 {
 	// Resolve which function to use and pass along
-	BYTE filename[20];
+	BYTE filename[40];
 
 	// Load the file name
 	// Make sure BYTE filename[] above is large enough for your longest name
 	MPFSGetFilename(curHTTP.file, filename, sizeof(filename));
-
 	return HTTP_IO_DONE;
 }
 
@@ -269,3 +294,4 @@ BYTE HTTPCheckAuth(BYTE* cUser, BYTE* cPass)
 #endif
 
 #endif
+
